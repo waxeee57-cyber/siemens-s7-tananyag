@@ -2,7 +2,7 @@
   try{
     var parts=[];
     for(var i=0;i<4;i++){
-      parts.push(await fetch("gz"+i+".b64?v=1").then(function(r){ if(!r.ok) throw new Error("gz"+i); return r.text(); }));
+      parts.push(await fetch("gz"+i+".b64?v=2").then(function(r){ if(!r.ok) throw new Error("gz"+i); return r.text(); }));
     }
     var b64=parts.join("");
     var bin=Uint8Array.from(atob(b64), function(c){ return c.charCodeAt(0); });
