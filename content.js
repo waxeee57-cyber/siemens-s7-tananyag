@@ -1,7 +1,7 @@
 (async function(){
   try{
     var parts=[];
-    for(var i=0;i\u003c12;i++){
+    for(var i=0;i<12;i++){
       parts.push(await fetch("gz"+i+".b64?v=3").then(function(r){ if(!r.ok) throw new Error("gz"+i); return r.text(); }));
     }
     var b64=parts.join("");
@@ -13,5 +13,5 @@
     var s=document.createElement("scr"+"ipt");
     s.src="app.js";
     document.body.appendChild(s);
-  }catch(e){ console.error("S7 content load failed", e); var el=document.getElementById("content-area"); if(el) el.innerHTML="\u003cp style=color:#ef4444\u003eTartalom betoltesi hiba\u003c/p\u003e"; }
+  }catch(e){ console.error("S7 content load failed", e); var el=document.getElementById("content-area"); if(el) el.innerHTML="<p style=color:#ef4444>Tartalom betoltesi hiba</p>"; }
 })();
