@@ -1,1 +1,109 @@
-window.__S7_APP_PARTS = window.__S7_APP_PARTS || []; window.__S7_APP_PARTS[3] = " const emin = parseFloat($('#sc-emin').value);\n    const emax = parseFloat($('#sc-emax').value);\n    const out = $('#sc-out');\n    if ([raw, rmin, rmax, emin, emax].some((x) => Number.isNaN(x))) {\n      out.textContent = '\u00c9rv\u00e9nytelen sz\u00e1m.';\n      return;\n    }\n    if (rmax === rmin) {\n      out.textContent = 'Raw max nem egyezhet a raw min-nel.';\n      return;\n    }\n    const eng = emin + ((raw - rmin) / (rmax - rmin)) * (emax - emin);\n    const pct = ((raw - rmin) / (rmax - rmin)) * 100;\n    out.textContent = `M\u00e9rn\u00f6ki \u00e9rt\u00e9k: ${eng.toFixed(4)}\\nNyers ar\u00e1ny: ${pct.toFixed(2)}%\\nK\u00e9plet: eng = ${emin} + (${raw} \u2212 ${rmin}) / (${rmax} \u2212 ${rmin}) \u00d7 (${emax} \u2212 ${emin})`;\n  }\n\n  /* ---------- Charts ---------- */\n  function initCharts(mod) {\n    if (typeof Chart === 'undefined') return;\n    const charts = mod.charts || [];\n\n    if (charts.includes('scan')) {\n      const canvas = $('#chart-scan-cycle');\n      if (canvas) {\n        chartInstances.push(\n          new Chart(canvas, {\n            type: 'doughnut',\n            data: {\n              labels: ['I/O olvas\u00e1s', 'Program', 'I/O \u00edr\u00e1s', 'Kommunik\u00e1ci\u00f3 / egy\u00e9b'],\n              datasets: [\n                {\n                  data: [12, 55, 10, 23],\n                  backgroundColor: ['#0891b2', '#06b6d4', '#22c55e', '#334155'],\n                  borderWidth: 0,\n                },\n              ],\n            },\n            options: {\n              plugins: {\n                legend: { labels: { color: '#94a3b8' } },\n                title: { display: true, text: 'Tipikus scan id\u0151ar\u00e1nyok (%)', color: '#e2e8f0' },\n              },\n            },\n          })\n        );\n      }\n    }\n\n    if (charts.includes('compare')) {\n      const canvas = $('#chart-family-compare');\n      if (canvas) {\n        chartInstances.push(\n          new Chart(canvas, {\n            type: 'bar',\n            data: {\n              labels: ['Teljes\u00edtm\u00e9ny', 'I/O sk\u00e1l\u00e1zhat\u00f3s\u00e1g', 'Motion', 'Safety v\u00e1laszt\u00e9k', 'Egyszer\u0171s\u00e9g'],\n              datasets: [\n                {\n                  label: 'S7-1200',\n                  data: [55, 45, 35, 50, 90],\n                  backgroundColor: '#22c55e',\n                },\n                {\n                  label: 'S7-1500',\n                  data: [95, 95, 90, 95, 60],\n                  backgroundColor: '#06b6d4',\n                },\n              ],\n            },\n            options: {\n              scales: {\n                y: { beginAtZero: true, max: 100, ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } },\n                x: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } },\n              },\n              plugins: {\n                legend: { labels: { color: '#94a3b8' } },\n                title: { display: true, text: 'Csal\u00e1d \u00f6sszehasonl\u00edt\u00e1s (relat\u00edv)', color: '#e2e8f0' },\n              },\n            },\n          })\n        );\n      }\n    }\n\n    if (charts.includes('pid')) {\n      const canvas = $('#chart-pid');\n      if (canvas) {\n        const n = 40;\n        const sp = Array(n).fill(50);\n        const pv = [];\n        let y = 10;\n        for (let i = 0; i < n; i++) {\n          y += (50 - y) * 0.18 + (Math.sin(i / 3) * (i < 15 ? 2 : 0.3));\n          pv.push(y);\n        }\n        chartInstances.push(\n          new Chart(canvas, {\n            type: 'line',\n            data: {\n              labels: Array.from({ length: n }, (_, i) => i),\n              datasets: [\n                { label: 'SP', data: sp, borderColor: '#f59e0b', tension: 0, pointRadius: 0 },\n                { label: 'PV (P-domin\u00e1ns v\u00e1lasz)', data: pv, borderColor: '#06b6d4', tension: 0.25, pointRadius: 0 },\n              ],\n            },\n            options: {\n              scales: {\n                y: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } },\n                x: { ticks: { color: '#64748b' }, grid: { color: '#1e293b' }, title: { display: true, text: 'id\u0151', color: '#64748b' } },\n              },\n              plugins: {\n                legend: { labels: { color: '#94a3b8' } },\n                title: { display: true, text: 'PID v\u00e1laszv\u00e1zlat (illusztr\u00e1ci\u00f3)', color: '#e2e8f0' },\n              },\n            },\n          })\n        );\n      }\n    }\n  }\n\n  /* ---------- Mobile sidebar ---------- */\n  function openSidebarMobile() {\n    $('#sidebar') && $('#sidebar').classList.add('open');\n    $('#sidebar-overlay') && $('#sidebar-overlay').classList.add('show');\n  }\n  function closeSidebarMobile() {\n    $('#sidebar') && $('#sidebar').classList.remove('open');\n    $('#sidebar-overlay') && $('#sidebar-overlay').classList.remove('show');\n  }\n\n  /* ---------- Init ---------- */\n  function init() {\n    renderNav();\n    updateOverallProgress();\n\n    const search = $('#search-input');\n    if (search) {\n      search.addEventListener('input', () => renderNav());\n    }\n\n    $('#menu-toggle') && $('#menu-toggle').addEventListener('click', openSidebarMobile);\n    $('#sidebar-overlay') && $('#sidebar-overlay').addEventListener('click', closeSidebarMobile);\n    $('#logo-home') && $('#logo-home').addEventListener('click', () => navigate('home'));\n\n    const p = loadProgress();\n    navigate('home');\n  }\n\n  if (document.readyState === 'loading') {\n    document.addEventListener('DOMContentLoaded', init);\n  } else {\n    init();\n  }\n})();\n";
+          item.classList.toggle('open');
+        });
+      }
+    });
+
+    // SAP order flow step-through (M16)
+    initSapOrderFlow();
+
+    // SCL MC (M10)
+    const sclMc = $('#scl-mc');
+    if (sclMc) {
+      $$('input', sclMc).forEach((inp) => {
+        inp.addEventListener('change', () => {
+          const fb = $('#scl-mc-fb');
+          const ok = inp.value === '0';
+          fb.className = 'quiz-feedback show ' + (ok ? 'ok' : 'bad');
+          fb.textContent = ok
+            ? 'Helyes! Az SCL FOR … DO … END_FOR; szintaxist használ.'
+            : 'Nem egészen. A helyes forma: FOR i := 1 TO 10 DO … END_FOR;';
+          $$('.quiz-opt', sclMc).forEach((o) => o.classList.remove('correct', 'wrong'));
+          inp.closest('.quiz-opt').classList.add(ok ? 'correct' : 'wrong');
+        });
+      });
+    }
+  }
+
+  function gradeQuiz(mod) {
+    const questions = mod.quiz || [];
+    let correct = 0;
+    const weak = [];
+
+    questions.forEach((qq, i) => {
+      const selected = $(`input[name="q${i}"]:checked`);
+      const fb = $(`#fb-${i}`);
+      $$(`.quiz-opt[data-q="${i}"]`).forEach((o) => o.classList.remove('correct', 'wrong'));
+
+      if (!selected) {
+        if (fb) {
+          fb.className = 'quiz-feedback show bad';
+          fb.textContent = 'Nem válaszoltál. ' + qq.explain;
+        }
+        weak.push(i + 1);
+        return;
+      }
+      const val = parseInt(selected.value, 10);
+      const lab = selected.closest('.quiz-opt');
+      if (val === qq.answer) {
+        correct++;
+        if (lab) lab.classList.add('correct');
+        if (fb) {
+          fb.className = 'quiz-feedback show ok';
+          fb.textContent = 'Helyes! ' + qq.explain;
+        }
+      } else {
+        if (lab) lab.classList.add('wrong');
+        const rightLab = $(`.quiz-opt[data-q="${i}"][data-opt="${qq.answer}"]`);
+        if (rightLab) rightLab.classList.add('correct');
+        if (fb) {
+          fb.className = 'quiz-feedback show bad';
+          fb.textContent = 'Helytelen. ' + qq.explain;
+        }
+        weak.push(i + 1);
+      }
+    });
+
+    const total = questions.length;
+    const pct = Math.round((correct / total) * 100);
+    markCompleted(mod.id, { correct, total, pct, weak });
+
+    const res = $('#quiz-result');
+    if (res) {
+      res.className = 'quiz-result show';
+      let html = `\u003cstrong>Eredmény: ${correct} / ${total} (${pct}%)\u003c/strong>`;
+      if (mod.id === 'm15') {
+        html += `\u003cdiv class="final-report">\u003cp>Záróvizsga értékelés\u003c/p>`;
+        if (pct >= 80) html += `\u003cp style="color:#22c55e">Gratulálunk — mesterszintű eredmény!\u003c/p>`;
+        else if (pct >= 60) html += `\u003cp style="color:#f59e0b">Jó alap — ismételd a gyenge témákat.\u003c/p>`;
+        else html += `\u003cp style="color:#ef4444">Érdemes visszatérni a korábbi modulokhoz.\u003c/p>`;
+        if (weak.length) {
+          html += `\u003cp>Gyenge kérdések:\u003c/p>\u003cul class="weak-list">${weak.map((n) => `\u003cli>Kérdés ${n}\u003c/li>`).join('')}\u003c/ul>`;
+          html += `\u003cp style="font-size:0.85rem;color:#94a3b8;margin-top:0.5rem">Javasolt ismétlés: M0–M14 megfelelő fejezetei a fenti kérdések témái alapján.\u003c/p>`;
+        }
+        html += `\u003c/div>`;
+      } else if (weak.length) {
+        html += `\u003cp style="margin-top:0.5rem;color:#94a3b8;font-size:0.9rem">Hibás / hiányzó: ${weak.join(', ')}. olvasd el újra a magyarázatokat.\u003c/p>`;
+      }
+      res.innerHTML = html;
+    }
+  }
+
+  /* ---------- Simulators ---------- */
+  function decodeAddress() {
+    const raw = (($('#addr-input') && $('#addr-input').value) || '').trim();
+    const out = $('#addr-output');
+    if (!out) return;
+    const s = raw.replace(/\s+/g, '');
+    if (!s) {
+      out.textContent = 'Írj be egy címet.';
+      return;
+    }
+
+    // Patterns
+    let m;
+    // %Ix.y / %Qx.y / %Mx.y
+    m = s.match(/^%([IQM])(\d+)\.(\d+)$/i);
+    if (m) {
+      const area = { I: 'Input (folyamatkép bemenet)', Q: 'Output (folyamatkép kimenet)', M: 'Memory / Merker' }[m[1].toUpperCase()];
+      const bit = +m[3];
+      if (bit > 7) {
