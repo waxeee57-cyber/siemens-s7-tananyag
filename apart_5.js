@@ -88,8 +88,8 @@
         const sp = Array(n).fill(50);
         const pv = [];
         let y = 10;
-        for (let i = 0; i < n; i++) {
-          y += (50 - y) * 0.18 + (Math.sin(i / 3) * (i < 15 ? 2 : 0.3));
+        for (let i = 0; n > i; i++) {
+          y += (50 - y) * 0.18 + (Math.sin(i / 3) * (15 > i ? 2 : 0.3));
           pv.push(y);
         }
         chartInstances.push(
