@@ -11,6 +11,42 @@
   <script src="app.js" defer></script>
 </head>
 <body>
-  <div id="app"></div>
+  <div class="sidebar-overlay" id="sidebar-overlay" aria-hidden="true"></div>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar" aria-label="Modulnavigáció">
+      <div class="sidebar-header">
+        <div class="sidebar-logo" id="logo-home" style="cursor:pointer" title="Kezdőlap">
+          <div class="logo-mark">S7</div>
+          <div class="logo-text">
+            <h1>S7 Tananyag</h1>
+            <span>TIA Portal · PLC képzés</span>
+          </div>
+        </div>
+        <div class="search-box">
+          <input type="search" id="search-input" placeholder="Keresés modulokban..." autocomplete="off" aria-label="Keresés" />
+        </div>
+      </div>
+      <div class="overall-progress">
+        <label>
+          <span>Összesített haladás</span>
+          <span id="overall-progress-label">0 / 16 modul (0%)</span>
+        </label>
+        <div class="progress-track">
+          <div class="progress-fill" id="overall-progress-fill"></div>
+        </div>
+      </div>
+      <nav class="module-nav" id="module-nav" aria-label="Modulok"></nav>
+    </aside>
+    <div class="main-wrap">
+      <header class="topbar">
+        <button type="button" class="menu-toggle" id="menu-toggle" aria-label="Menü">☰</button>
+        <div class="breadcrumb" id="breadcrumb"><strong>Kezdőlap</strong></div>
+        <div class="module-progress-mini" id="module-progress-mini">Haladás: 0%</div>
+      </header>
+      <main class="content-area" id="content-area" tabindex="-1">
+        <p style="color:#94a3b8">Betöltés…</p>
+      </main>
+    </div>
+  </div>
 </body>
 </html>
